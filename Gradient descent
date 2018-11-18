@@ -1,0 +1,93 @@
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+#include <math.h>
+const int dataset=10000;
+const int feature=10;
+const float learning_rate=0.0000005;
+const int times=50;
+
+using namespace std;
+void mal(float input[dataset][feature], float weight[feature],float output[dataset]);
+void rand(float input[dataset][feature],float real[dataset]);
+float cost(float output[dataset], float real[dataset]);
+void rand(float input[dataset][feature],float real[dataset]);
+//creat a random number
+void tidu(float input[dataset][feature],float real[dataset], float weight[feature]);
+int main(){
+	float input[dataset][feature];
+	float weight[feature];
+	float output[dataset];
+	float real[dataset];
+	
+	rand(input,real);
+	for(int i=0;i<dataset;i++){
+		for (int j=0;j<feature;j++){
+			input[i][j]=1;
+		}
+	}
+	for(int i=0;i<feature;i++){
+		weight[i]=i;
+	}
+	tidu(input, real, weight);
+	return 0;
+}
+	
+
+void mal(float input[dataset][feature], float weight[feature], float output[dataset]){
+	for(int i=0;i<dataset;i++){
+		float s=0;
+		for(int j=0;j<feature;j++){
+			s+=input[i][j]*weight[j];
+			output[i]=s;
+		}
+	}
+	return;
+}
+
+float cost(float output[dataset], float real[dataset]){
+	float c=0;
+	for(int i=0; i<dataset;i++){
+		c+=(output[i]-real[i])*(output[i]-real[i]);
+	}
+	return c;
+}
+void rand(float input[dataset][feature],float real[dataset]){
+	srand((unsigned int)time(NULL));
+//	 creat rand number
+	float weight[feature];
+	for (int i=0; i<feature;i++){
+		weight[i]=float(rand()%1000)/1000;
+	}
+	for (int i=0;i<dataset;i++){
+		for(int j=0;j<feature;j++){
+			input[i][j]=float(rand()%1000)/1000;
+		}
+	}
+	mal(input,weight,real);
+}
+void tidu(float input[dataset][feature],float real[dataset], float weight[10]){
+	srand((unsigned int)time(NULL));
+	float output[dataset];
+	float deriva[feature];
+	for(int i=0; i<feature;i++){
+		weight[i]=float(rand()%1000)/1000;
+	}
+	float a,b;
+	mal(input,weight,output);
+	for(int i=0;i<times;i++){
+		for(int j=0;j<feature;j++){
+			mal(input,weight,output);
+			a=cost(output,real);
+			weight[j]+=0.001;
+			mal(input,weight,output);
+			b=cost(output,real);
+			weight[j]-=0.001;
+			deriva[j]=(b-a)/0.001;
+		}
+		for(int i=0;i<feature;i++){
+			weight[i]-=learning_rate*deriva[i];
+		}
+		cout << cost(output,real)/dataset*100<<"%"<<endl;
+	}		
+}
